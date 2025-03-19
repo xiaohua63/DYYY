@@ -6,7 +6,8 @@
 typedef NS_ENUM(NSInteger, MediaType) {
     MediaTypeVideo,
     MediaTypeImage,
-    MediaTypeAudio
+    MediaTypeAudio,
+    MediaTypeHeic
 };
 
 @interface URLModel : NSObject
@@ -31,6 +32,7 @@ typedef NS_ENUM(NSInteger, MediaType) {
 @end
 
 @interface AWEAwemeModel : NSObject
+@property (nonatomic, assign,readwrite) CGFloat videoDuration;
 @property (nonatomic, strong) AWEVideoModel *video;
 @property (nonatomic, strong) AWEMusicModel *music;
 @property (nonatomic, strong) NSArray<AWEImageAlbumImageModel *> *albumImages;
@@ -40,6 +42,7 @@ typedef NS_ENUM(NSInteger, MediaType) {
 @property (nonatomic, strong) NSString *ipAttribution;
 @property (nonatomic, strong) id currentAweme;
 @property (nonatomic, copy) NSString *descriptionString;
+@property (nonatomic, assign) BOOL isAds;
 @property (nonatomic, assign) BOOL isLive;
 - (BOOL)isLive;
 @end
@@ -66,9 +69,6 @@ typedef NS_ENUM(NSInteger, MediaType) {
 + (instancetype)shareInstance;
 - (void)dismissWithAnimation:(BOOL)animated completion:(void (^)(void))completion;
 @end
-
-void downloadMedia(NSURL *url, MediaType mediaType, void (^completion)(void));
-void downloadAllImages(NSMutableArray *imageURLs);
 
 @interface AWENormalModeTabBarGeneralButton : UIButton
 @end
@@ -102,6 +102,7 @@ void downloadAllImages(NSMutableArray *imageURLs);
 
 @interface AWEPlayInteractionViewController : UIViewController
 @property (nonatomic, strong) UIView *view;
+- (void)performCommentAction;
 @end
 
 @interface UIView (Transparency)
@@ -149,8 +150,15 @@ void downloadAllImages(NSMutableArray *imageURLs);
 
 @end
 
-@interface AWEPlayInteractionProgressController : UIView
+@interface AWEPlayInteractionNewBaseController : UIView
+@property (retain, nonatomic) AWEAwemeModel * model;
+@end
+
+@interface AWEPlayInteractionProgressController : AWEPlayInteractionNewBaseController
 - (UIViewController *)findViewController:(UIViewController *)vc ofClass:(Class)targetClass;
+@property (retain, nonatomic) id progressSlider;
+- (NSString *)formatTimeFromSeconds:(CGFloat)seconds;
+- (NSString *)convertSecondsToTimeString:(NSInteger)totalSeconds;
 @end
 
 @interface AWEAdAvatarView : UIView
@@ -260,4 +268,63 @@ void downloadAllImages(NSMutableArray *imageURLs);
 @property (nonatomic, assign) CGRect frame;
 @property (nonatomic, strong) NSArray *subviews;
 @property (nonatomic, assign) CGAffineTransform transform;
+@end
+
+@interface AWECommentImageModel : NSObject
+@property (nonatomic, copy) NSString *originUrl;
+@end
+
+@class AWECommentModel;
+@class AWECommentLongPressPanelParam;
+@class AWEIMStickerModel;
+@class AWEURLModel;
+
+@interface AWECommentLongPressPanelContext : NSObject
+- (AWECommentModel *)selectdComment;
+- (AWECommentLongPressPanelParam *)params;
+@end
+
+@interface AWECommentLongPressPanelParam : NSObject
+- (AWECommentModel *)selectdComment;
+@end
+
+@interface AWECommentModel : NSObject
+- (AWEIMStickerModel *)sticker;
+- (NSString *)content;
+@end
+
+@interface AWEIMStickerModel : NSObject
+- (AWEURLModel *)staticURLModel;
+@end
+
+@interface AWEURLModel : NSObject
+- (NSArray *)originURLList;
+@end
+
+@interface _TtC33AWECommentLongPressPanelSwiftImpl37CommentLongPressPanelSaveImageElement : NSObject
+- (AWECommentLongPressPanelContext *)commentPageContext;
+@end
+
+@interface _TtC33AWECommentLongPressPanelSwiftImpl32CommentLongPressPanelCopyElement : NSObject
+- (AWECommentLongPressPanelContext *)commentPageContext;
+@end
+
+@interface AWEFeedProgressSlider : UIView
+@property (nonatomic, strong) UIView *leftLabelUI;
+@property (nonatomic, strong) UIView *rightLabelUI;
+@property (nonatomic) AWEPlayInteractionProgressController * progressSliderDelegate;
+@end
+
+@interface AWEFeedChannelObject : NSObject
+@property (nonatomic, copy) NSString *channelID;
+@property (nonatomic, copy) NSString *channelTitle;
+@end
+
+@interface AWEFeedChannelManager : NSObject
+- (AWEFeedChannelObject *)getChannelWithChannelID:(NSString *)channelID;
+@end
+
+@interface AWEHPTopTabItemModel : NSObject
+@property (nonatomic, copy) NSString *channelID;
+@property (nonatomic, copy) NSString *channelTitle;
 @end
